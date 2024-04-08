@@ -15,7 +15,6 @@ cap = cv2.VideoCapture(0)
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
-
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 while True:
@@ -30,6 +29,7 @@ while True:
             x_ = []
             y_ = []
 
+            # drawing detected hand landmark
             mp_drawing.draw_landmarks(
                 frame,
                 hand_landmarks,
@@ -38,6 +38,7 @@ while True:
                 mp_drawing_styles.get_default_hand_connections_style()
             )
 
+            # getting finger joint coordinates used for prediction
             for i in range(len(hand_landmarks.landmark)):
                 x = hand_landmarks.landmark[i].x
                 y = hand_landmarks.landmark[i].y
@@ -46,9 +47,11 @@ while True:
                 data_aux.append(x - hand_landmarks.landmark[0].x)
                 data_aux.append(y - hand_landmarks.landmark[0].y)
 
+            # run prediction and apply result
             prediction = model.predict([np.asarray(data_aux)])
             predicted_phrase = label_dict[int(prediction[0])]
 
+            # draw border for detected hand sign and putting translation on top of the border
             x1 = int(min(x_) * W) - 10
             y1 = int(min(y_) * H) - 10
             x2 = int(max(x_) * W) + 10

@@ -1,6 +1,5 @@
 import os
 import pickle
-
 import mediapipe as mp
 import cv2
 
@@ -20,6 +19,7 @@ for dir_ in os.listdir(DATA_DIR):
         img = cv2.imread(os.path.join(DATA_DIR, dir_, img_path))
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+        # Each coordinate of finger joint will be converted to relative coordinate to the first one
         results = hands.process(img_rgb)
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
@@ -32,6 +32,7 @@ for dir_ in os.listdir(DATA_DIR):
             data.append(data_aux)
             labels.append(dir_)
 
+# Storing data in data.pickle for later use
 f = open('data.pickle', 'wb')
 pickle.dump({'data': data, 'labels': labels}, f)
 f.close()
